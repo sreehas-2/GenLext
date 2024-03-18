@@ -12,7 +12,7 @@ from PIL import Image
 from .emotions import predict_emotion
 import base64
 import io
-# import numpy as np
+import numpy as np
 # Create your views here.
 
 def lobby(request):
@@ -76,7 +76,7 @@ def capture_and_process(request):
         base64_screenshot = request.POST.get('screenshot')
         binary_data = base64.b64decode(base64_screenshot.split(',')[1]) 
         image = np.array(Image.open(io.BytesIO(binary_data)))
-        result_emotion = predict_emotion(image)
+        result_emotion_id = predict_emotion(image)
         
-        return JsonResponse({'emotions': result_emotion})
+        return JsonResponse({'emotions': result_emotion_id})
     return JsonResponse({'error': 'Invalid request method'}, status=400)

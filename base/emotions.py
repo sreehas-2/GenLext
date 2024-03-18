@@ -25,7 +25,7 @@ model.add(Dropout(0.5))
 model.add(Dense(7, activation='softmax'))
 model.load_weights('base/model.h5')
 
-emotion_dict = {0: "Angry", 1: "sad", 2: "sad", 3: "Happy", 4: "happy", 5: "Sad", 6: "Happy"}
+emotion_dict = {0: "Angry", 1: "Disgusted", 2: "Fearful", 3: "Happy", 4: "Neutral", 5: "Sad", 6: "Surprised"}
 
 def predict_emotion(input_screenshot_array):
     print("inside pred fun")
@@ -36,7 +36,7 @@ def predict_emotion(input_screenshot_array):
     faces = face_cascade.detectMultiScale(gray_screenshot, scaleFactor=1.3, minNeighbors=5)
 
     if len(faces) == 0:
-        return "neutral"
+        return 4
     else:
         # Store the predicted emotions for each face
         face_emotions = []
@@ -46,10 +46,6 @@ def predict_emotion(input_screenshot_array):
             cropped_img = np.expand_dims(np.expand_dims(cv2.resize(roi_gray, (48, 48)), -1), 0)
             prediction = model.predict(cropped_img)
             max_index = int(np.argmax(prediction))
-            face_emotions.append(emotion_dict[max_index])
-
-        # Calculate the mode (most frequent emotion) of all faces
-        mode_emotion = max(set(face_emotions), key=face_emotions.count)
-        return mode_emotion
+        return max_index 
 
 

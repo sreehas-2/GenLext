@@ -29,5 +29,66 @@
 <script type="text/javascript" src="{% static 'js/streams.js' %}" ></script>
 <!-- Your HTML and JavaScript code -->
 
+<script>
+   const emotion_dict = {
+    0: "Angry",
+    1: "Disgusted",
+    2: "Fearful",
+    3: "Happy",
+    4: "Neutral",
+    5: "Sad",
+    6: "Surprised"
+};
+
+function captureScreenshotsAndSendToBackend() {
+    console.log("inside mainfun")
+    console.log("inside mainfun")
+    // Get all div elements to capture
+    var divsToCapture = document.querySelectorAll('.video-container');
+    var emotionCounts = [0, 0, 0, 0, 0, 0, 0];
+   console.log(divsToCapture.length)
+    // Loop through each div
+    divsToCapture.forEach(function(div, index) {
+        console.log("inside mainfun2")
+        // Use html2canvas to capture the screenshot
+        html2canvas(div).then(function(canvas) {
+            console.log("inside mainfun3")
+            // Convert the canvas to base64 image
+            var base64Screenshot = canvas.toDataURL('image/png');
+
+            // Send the base64 data to the server using Ajax
+            $.ajax({
+                url: "{% url 'capture_and_process' %}",
+                type: "POST",
+                data: { screenshot: base64Screenshot },
+                success: function(response) {
+                    console.log("inside mainfun1")
+                    // Increment the count for each emotion in the response
+                        emotionCounts[ response.emotions]++; // Increment the count for the corresponding emotion
+                    // If it's the last div, update the emotion predictions
+                    if (index === divsToCapture.length - 1) {
+                        var mode = Object.keys(emotionCounts).reduce(function(a, b) {
+                            return emotionCounts[a] > emotionCounts[b] ? a : b;
+                        });
+                        document.getElementById("emotion-predictions").innerHTML = emotion_dict[mode];
+                      
+                        
+                    }
+                },
+                error: errorFunc
+            });
+        });
+    });
+    setTimeout(captureScreenshotsAndSendToBackend, 1000);
+}
+
+function errorFunc() {
+    alert('Error capturing and processing1.');
+}
+
+// Call the function initially to start the process
+captureScreenshotsAndSendToBackend();
+
+</script> 
 
 {% endblock content %}
