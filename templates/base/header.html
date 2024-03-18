@@ -4,18 +4,18 @@
       {% if user.is_teacher %}
       <a class="navbar-brand" href="{% url 'teacher' %}">
              {% load static %}
-             <img src="{% static 'others/logo.png' %}" class="logo"  alt="" >
+             <!-- <img src="{% static 'others/logo.png' %}" class="logo"  alt="" > -->
     </a>
       {% elif user.is_student %}
       <a class="navbar-brand" href="{% url 'student' %}">
-             
-        <img src="{% static 'others/logo.png' %}" class="logo"  alt="" >
+        <!-- <img src="{% static 'others/logo.png' %}" class="logo"  alt="" > -->
     </a>
     {% endif %}
       {% else %}
       <a class="navbar-brand" href="{% url 'index' %}">
              
-        <img src="{% static 'others/logo.png' %}" class="logo"  alt="" >
+        <!-- <img src="{% static 'others/logo.png' %}" class="logo"  alt="" > -->
+        <h1>GenLext</h1>
     </a>
       
       {% endif %}
