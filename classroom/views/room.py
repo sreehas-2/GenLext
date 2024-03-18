@@ -59,11 +59,26 @@ class SingleClass(View):
         
         room = get_object_or_404(ClassRoom  ,id=id) 
         stream = room.roomstream_set.all().order_by('-created_at')
-        context ={
+        x=1
+        print("ehfgbjad")
+        try:
+            context ={
             'room':room,
             'stream':stream,
-            'user':request.user
-        } 
+            'user':request.user,
+            'teacher':request.user.teachers,
+            }  
+            print("y")
+        except:
+            context ={
+            'room':room,
+            'stream':stream,
+            'user':request.user,
+            'student':request.user.students
+            }
+            print("x")
+            
+
         return render(request,'class/single.html', context)
 
 # Join Class

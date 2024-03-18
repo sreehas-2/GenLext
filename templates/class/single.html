@@ -60,7 +60,7 @@
             <div class="col-11 main_box" style="margin:0 auto; background-image: url('{{ room.cover.url}}');" >
                     <h2><span id="naam">{{ room.name }}</span></h2>
                     <p>{{ room.details }}</p>
-                    <h5 style="color:white;">Code : <span id="rom">{{ room.code }}</span></h5>
+                    <h5 style="color:white;">Code :{{ room.code }}</h5>
             </div>
         </div>
 
@@ -156,12 +156,13 @@
   </div>
   
 <script>
-  
-
   let handleSubmit = async () => {
-      console.log("hsbchj")
-      let room = document.getElementById("rom").innerHTML
-      let name = document.getElementById("naam").innerHTML
+    let h = "{{teacher.name}}"
+    if(h=="") h="{{student.name}}"
+      
+      console.log(h)
+      let room = document.getElementById("naam").innerHTML
+      let name = h
 
       console.log(room)
 
