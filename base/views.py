@@ -71,7 +71,7 @@ def deleteMember(request):
 
 @csrf_exempt
 def capture_and_process(request): 
-    print ("inside")
+    # print ("inside")
     if request.method == 'POST':
         base64_screenshot = request.POST.get('screenshot')
         binary_data = base64.b64decode(base64_screenshot.split(',')[1]) 
@@ -80,8 +80,8 @@ def capture_and_process(request):
         print(list1)
         # print((list1[1]))
         result_emotion_id=list1[0]
-        sleep_bool=0
-        if len(list1)==2:
-            sleep_bool=1
+        sleep_bool=list1[1]
+        # if len(list1)==2:
+        #     sleep_bool=list1[1]
         return JsonResponse({'emotions': result_emotion_id,'sleep': sleep_bool})
     return JsonResponse({'error': 'Invalid request method'}, status=400)

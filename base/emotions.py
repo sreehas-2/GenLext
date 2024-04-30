@@ -7,7 +7,7 @@ from keras.layers import MaxPooling2D
 from scipy.spatial import distance
 from imutils import face_utils
 import numpy as np
-
+import dlib
 
 model = Sequential()
 
@@ -31,8 +31,12 @@ model.load_weights('base/model.h5')
 emotion_dict = {0: "Angry", 1: "Disgusted", 2: "Fearful", 3: "Happy", 4: "Neutral", 5: "Sad", 6: "Surprised"}
 
 #Minimum threshold of eye aspect ratio below which alarm is triggerd
-EYE_ASPECT_RATIO_THRESHOLD = 100
+EYE_ASPECT_RATIO_THRESHOLD = 0.12
 
+
+#Load face detector and predictor, uses dlib shape predictor file
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor('base/shape_predictor_68_face_landmarks.dat')
 
 #COunts no. of consecutuve frames below threshold value
 COUNTER = 0
@@ -56,39 +60,39 @@ def eye_aspect_ratio(eye):
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS['right_eye']
 
 def predict_emotion(input_screenshot_array):
-    print("inside pred fun")
+    # print("inside pred fun")
     check=0
     gray_screenshot = cv2.cvtColor(input_screenshot_array, cv2.COLOR_BGR2GRAY)
 
     # Find faces in the input screenshot
     faces = face_cascade.detectMultiScale(gray_screenshot, scaleFactor=1.3, minNeighbors=5)
+    faces1 = detector(gray_screenshot, 0)
     if len(faces) == 0:
-        return [4]
+        max_index=4
     else:
         for (x, y, w, h) in faces:
             roi_gray = gray_screenshot[y:y + h, x:x + w]
             cropped_img = np.expand_dims(np.expand_dims(cv2.resize(roi_gray, (48, 48)), -1), 0)
             prediction = model.predict(cropped_img)
             max_index = int(np.argmax(prediction))
-            #Detect eyes in face
-            eyes = eye_cascade.detectMultiScale(roi_gray)
-            ear=0
-            cnt=0
-            for (ex, ey, ew, eh) in eyes:
-                # Calculate aspect ratio of the detected eye
-                
-                eye_roi = roi_gray[ey:ey+eh, ex:ex+ew]
-                ear =ear+ eye_aspect_ratio([(ex, ey), (ex + ew, ey), (ex, ey + eh), (ex + ew, ey + eh), (ex + ew//2, ey + eh//2), (ex + ew//2, ey)])
-                
-                # print(ex,ey,ew,eh)
-                cnt=cnt+1
-            print(ear)
-            if(ear < EYE_ASPECT_RATIO_THRESHOLD):
-                check=1
-            print("eyescount ")
-            print(check)
-        result=[max_index,check]
-        print("h")
-        print(result[0])
-        return result
+    check=0
+    for face in faces1:
+
+        shape = predictor(gray_screenshot, face)
+        shape = face_utils.shape_to_np(shape)
+
+        #Get array of coordinates of leftEye and rightEye
+        leftEye = shape[lStart:lEnd]
+        rightEye = shape[rStart:rEnd]
+
+        #Calculate aspect ratio of both eyes
+        leftEyeAspectRatio = eye_aspect_ratio(leftEye)
+        rightEyeAspectRatio = eye_aspect_ratio(rightEye)
+
+        eyeAspectRatio = (leftEyeAspectRatio + rightEyeAspectRatio) / 2
+        #Detect if eye aspect ratio is less than threshold
+        print(eyeAspectRatio)
+        if(eyeAspectRatio < EYE_ASPECT_RATIO_THRESHOLD):
+            check=1
+    return [max_index,check]
     
