@@ -10,3 +10,8 @@ opencv-python
 keras
 numpy
 tensorflow
+numpy
+pygame
+imutils
+opencv_python
+scipy

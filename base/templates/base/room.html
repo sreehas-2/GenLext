@@ -66,6 +66,12 @@ function captureScreenshotsAndSendToBackend() {
                     // Increment the count for each emotion in the response
                         emotionCounts[ response.emotions]++; // Increment the count for the corresponding emotion
                     // If it's the last div, update the emotion predictions
+                        if (response.sleep === 1) {
+                                console.log("in sleep check")
+                                div.style.border = "20px solid red"; // Add red border around the div
+                        } else {
+                                div.style.border = "none"; // Remove any existing border
+                        }
                     if (index === divsToCapture.length - 1) {
                         var mode = Object.keys(emotionCounts).reduce(function(a, b) {
                             return emotionCounts[a] > emotionCounts[b] ? a : b;
